@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Kevin Garnett Mobile Game</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* KG Aura Glow */
+      .kg-glow {
+        filter: drop-shadow(0 0 20px #78be20) drop-shadow(0 0 35px #78be20);
+        transition: filter 0.25s ease;
+      }
+
+      body {
+        background-image: url("kg.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        overflow: hidden;
+        cursor: none;
+        position: relative;
+        min-height: 100vh;
+      }
+
+      /* Remove Celtics logo (green circle) */
+      .celtics-logo {
+        display: none;
+      }
+
+      /* Screen shake */
+      @keyframes screen-shake {
+        0% {
+          transform: translate(0px, 0px);
+        }
+        20% {
+          transform: translate(-8px, 5px);
+        }
+        40% {
+          transform: translate(6px, -8px);
+        }
+        60% {
+          transform: translate(-6px, 6px);
+        }
+        80% {
+          transform: translate(8px, -4px);
+        }
+        100% {
+          transform: translate(0px, 0px);
+        }
+      }
+
+      .shake {
+        animation: screen-shake 0.4s ease-in-out;
+      }
+
+      /* Custom Cursor (hidden on mobile) */
+      .cursor,
+      .cursor-follower {
+        position: fixed;
+        pointer-events: none;
+        z-index: 10000;
+        transition: transform 0.1s ease;
+      }
+      .cursor {
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        mix-blend-mode: difference;
+      }
+      .cursor-follower {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        transition: transform 0.3s ease;
+      }
+
+      /* KG Container */
+      .kg-container {
+        position: fixed;
+        pointer-events: none;
+        z-index: 1000;
+        transform-origin: center bottom;
+        transition: transform 0.1s ease-out;
+      }
+
+      /* KG Body */
+      .kg {
+        width: 80px;
+        height: 100px;
+        background: linear-gradient(135deg, #005083 0%, #002b5c 100%);
+        border-radius: 20px 20px 10px 10px;
+        position: relative;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        animation: breathe 3s ease-in-out infinite;
+        overflow: hidden;
+      }
+
+      @keyframes breathe {
+        0%,
+        100% {
+          transform: scaleY(1);
+        }
+        50% {
+          transform: scaleY(0.98);
+        }
+      }
+
+      .jersey-number {
+        position: absolute;
+        width: 40px;
+        height: 50px;
+        background: #005083;
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 5px;
+        top: 20px;
+        left: 20px;
+        border: 2px solid #78be20;
+        box-shadow: 0 0 10px rgba(120, 190, 32, 0.5);
+      }
+
+      .jersey-stripe {
+        position: absolute;
+        width: 100%;
+        height: 10px;
+        background: #78be20;
+        top: 10px;
+      }
+
+      .jersey-stripe.bottom {
+        bottom: 10px;
+      }
+
+      /* KG Head */
+      .kg-head {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #8b4513 0%, #654321 100%);
+        border-radius: 50%;
+        position: absolute;
+        top: -50px;
+        left: 10px;
+      }
+
+      .bald-spot {
+        position: absolute;
+        width: 55px;
+        height: 40px;
+        background: linear-gradient(135deg, #8b4513 0%, #654321 100%);
+        border-radius: 50%;
+        top: 0;
+        left: 2.5px;
+      }
+
+      .ear {
+        width: 15px;
+        height: 20px;
+        background: linear-gradient(135deg, #8b4513 0%, #654321 100%);
+        position: absolute;
+        top: 15px;
+        border-radius: 50%;
+      }
+      .ear.left {
+        left: -5px;
+      }
+      .ear.right {
+        right: -5px;
+      }
+
+      .eye {
+        width: 12px;
+        height: 12px;
+        background: white;
+        border-radius: 50%;
+        position: absolute;
+        top: 20px;
+      }
+      .eye.left {
+        left: 15px;
+      }
+      .eye.right {
+        right: 15px;
+      }
+      .pupil {
+        width: 6px;
+        height: 6px;
+        background: black;
+        border-radius: 50%;
+        position: absolute;
+        top: 3px;
+        left: 3px;
+      }
+
+      .eyebrow {
+        width: 15px;
+        height: 3px;
+        background: black;
+        position: absolute;
+        top: 15px;
+      }
+      .eyebrow.left {
+        left: 12px;
+        transform: rotate(-5deg);
+      }
+      .eyebrow.right {
+        right: 12px;
+        transform: rotate(5deg);
+      }
+
+      .mouth {
+        width: 20px;
+        height: 8px;
+        border: 2px solid black;
+        border-top: none;
+        border-radius: 0 0 50% 50%;
+        position: absolute;
+        top: 35px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      /* Quote Bubble */
+      .quote-bubble {
+        position: fixed;
+        background: white;
+        color: #002b5c;
+        padding: 10px 15px;
+        border-radius: 15px;
+        font-size: 14px;
+        font-weight: bold;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        max-width: 180px;
+        text-align: center;
+        z-index: 1001;
+      }
+
+      .quote-bubble.show {
+        opacity: 1;
+      }
+
+      /* HUD */
+      .hud {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-end;
+        z-index: 900;
+      }
+
+      .hud-panel {
+        background: rgba(0, 0, 0, 0.55);
+        border-radius: 10px;
+        padding: 8px 12px;
+        color: #fff;
+        font-size: 14px;
+      }
+
+      .hud-label {
+        font-size: 10px;
+        opacity: 0.8;
+      }
+
+      .hud-value {
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      .speed-bar {
+        width: 100px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+      }
+
+      .speed-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #005083, #78be20, #002b5c);
+        width: 0%;
+        transition: width 0.2s ease;
+      }
+
+      /* Game Balls */
+      .game-ball {
+        position: fixed;
+        font-size: 40px;
+        z-index: 500;
+        pointer-events: none;
+        transition: transform 0.15s ease, opacity 0.15s ease;
+        animation: spin 1.2s linear infinite;
+      }
+
+      @keyframes spin {
+        from {
+          rotate: 0deg;
+        }
+        to {
+          rotate: 360deg;
+        }
+      }
+
+      /* Overlay */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1200;
+      }
+
+      .overlay.hidden {
+        display: none;
+      }
+
+      .overlay-content {
+        background: rgba(0, 0, 0, 0.85);
+        border-radius: 20px;
+        padding: 20px;
+        width: 90%;
+        max-width: 350px;
+        color: white;
+        text-align: center;
+      }
+
+      .overlay-title {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #ffeb3b;
+      }
+
+      .btn {
+        margin-top: 12px;
+        padding: 10px 18px;
+        border-radius: 999px;
+        border: none;
+        background: linear-gradient(135deg, #005083, #78be20);
+        color: #fff;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      /* Pause Button */
+      .pause-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(4px);
+        color: white;
+        font-size: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1500;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+      }
+
+      .pause-btn:active {
+        transform: scale(0.95);
+      }
+
+      /* Bottom Text */
+      .content {
+        position: fixed;
+        left: 50%;
+        bottom: 10px;
+        transform: translateX(-50%);
+        color: hsl(61, 100%, 50%);
+        background: rgba(0, 0, 0, 0.55);
+        padding: 8px 16px;
+        border-radius: 15px;
+        z-index: 800;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Removed Celtics Logo (was here) -->
+
+    <!-- Pause Button -->
+    <div class="pause-btn" id="pauseBtn">⏸</div>
+
+    <!-- KG -->
+    <div class="kg-container" id="kg">
+      <div class="kg">
+        <div class="jersey-stripe"></div>
+        <div class="jersey-number">5</div>
+        <div class="jersey-stripe bottom"></div>
+        <div class="kg-head">
+          <div class="bald-spot"></div>
+          <div class="ear left"></div>
+          <div class="ear right"></div>
+          <div class="eye left">
+            <div class="pupil"></div>
+          </div>
+          <div class="eye right">
+            <div class="pupil"></div>
+          </div>
+          <div class="eyebrow left"></div>
+          <div class="eyebrow right"></div>
+          <div class="mouth"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quote Bubble -->
+    <div class="quote-bubble" id="quoteBubble">ANYTHING IS POSSIBLE!</div>
+
+    <!-- HUD -->
+    <div class="hud">
+      <div class="hud-panel">
+        <div class="hud-label">Score</div>
+        <div class="hud-value" id="scoreValue">0</div>
+      </div>
+
+      <div class="hud-panel">
+        <div class="hud-label">KG Intensity</div>
+        <div class="speed-bar">
+          <div class="speed-fill" id="speedFill"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay">
+      <div class="overlay-content">
+        <div class="overlay-title">Good Luck, Faraz! 🍀</div>
+        <p>Move your mouse or finger to guide KG and collect basketballs!</p>
+        <button class="btn" id="startButton">Start Game</button>
+      </div>
+    </div>
+
+    <!-- Bottom Text -->
+    <div class="content">
+      <h1>Good luck Faraz!</h1>
+      <p>KG is here to protect you. Let's hoop. 🏀</p>
+    </div>
+
+    <script>
+      /* --- Variables & Setup --- */
+
+      const kg = document.getElementById("kg");
+      const cursor = document.querySelector(".cursor");
+      const cursorFollower = document.querySelector(".cursor-follower");
+      const quoteBubble = document.getElementById("quoteBubble");
+      const pauseBtn = document.getElementById("pauseBtn");
+      const overlay = document.getElementById("overlay");
+      const startButton = document.getElementById("startButton");
+      const scoreValue = document.getElementById("scoreValue");
+      const speedFill = document.getElementById("speedFill");
+
+      const isMobile = /Android|iPhone|iPad|iPod|IEMobile|BlackBerry/i.test(
+        navigator.userAgent
+      );
+
+      if (isMobile) {
+        cursor.style.display = "none";
+        cursorFollower.style.display = "none";
+      }
+
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let kgX = mouseX;
+      let kgY = mouseY;
+      let intensity = 0;
+      let fireActive = false;
+      let currentSpeed = 0;
+      let lastX = mouseX;
+      let lastY = mouseY;
+      let kgDirection = 1;
+      let gameRunning = false;
+      let paused = false;
+      let score = 0;
+      let spawnIntervalId = null;
+      let combo = 0;
+      let lastHitTime = 0;
+
+      const gameBalls = [];
+
+      // Sound effects
+      const sounds = ["kg1.mp3", "kg2.mp3", "kg3.mp3"].map((src) => {
+        const audio = new Audio(src);
+        audio.volume = 0.9;
+        return audio;
+      });
+
+      // NEW: Fire mode sound
+      const fireSound = new Audio("kg4.mp3");
+      fireSound.volume = 1.0;
+
+      const kgQuotes = [
+        "ANYTHING IS POSSIBLE!",
+        "The Big Ticket!",
+        "You take this outfit home, and you burn it!",
+        "Welcome to The Dawg Pound!",
+        "Big Dawgs gotta eat!",
+        "This ain't the Boy Scouts. This is the NBA!",
+      ];
+
+      let lastQuote = 0;
+
+      /* --- Intensity Decay --- */
+      setInterval(() => {
+        if (gameRunning && !paused && !fireActive) {
+          intensity = Math.max(0, intensity - 1);
+          speedFill.style.width = intensity + "%";
+        }
+      }, 300);
+
+      /* --- Input Handling --- */
+
+      function updatePointer(x, y) {
+        if (!gameRunning || paused) return;
+
+        mouseX = x;
+        mouseY = y;
+
+        if (!isMobile) {
+          cursor.style.left = `${x - 10}px`;
+          cursor.style.top = `${y - 10}px`;
+
+          cursorFollower.style.left = `${x - 20}px`;
+          cursorFollower.style.top = `${y - 20}px`;
+        }
+
+        const dx = x - lastX;
+        const dy = y - lastY;
+        currentSpeed = Math.min(Math.sqrt(dx * dx + dy * dy) / 2, 100);
+
+        lastX = x;
+        lastY = y;
+      }
+
+      document.addEventListener("mousemove", (e) =>
+        updatePointer(e.clientX, e.clientY)
+      );
+
+      document.addEventListener(
+        "touchmove",
+        (e) => {
+          const t = e.touches[0];
+          updatePointer(t.clientX, t.clientY);
+        },
+        { passive: false }
+      );
+
+      /* --- KG Movement Loop --- */
+
+      function animateKG() {
+        if (gameRunning && !paused) {
+          const dx = mouseX - kgX;
+          const dy = mouseY - kgY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          const easing = Math.min(dist / 200, 0.15);
+          kgX += dx * easing;
+          kgY += dy * easing;
+
+          if (intensity > 70) {
+            kg.classList.add("kg-glow");
+          } else {
+            kg.classList.remove("kg-glow");
+          }
+
+          kgDirection = dx > 0 ? 1 : -1;
+
+          kg.style.left = `${kgX - 40}px`;
+          kg.style.top = `${kgY - 50}px`;
+          kg.style.transform = `scaleX(${kgDirection})`;
+
+          if (Date.now() - lastQuote > 6000) {
+            showQuote();
+            lastQuote = Date.now();
+          }
+
+          checkCollection();
+        }
+
+        requestAnimationFrame(animateKG);
+      }
+      animateKG();
+
+      function showQuote() {
+        quoteBubble.textContent =
+          kgQuotes[Math.floor(Math.random() * kgQuotes.length)];
+        quoteBubble.style.left = `${kgX - 70}px`;
+        quoteBubble.style.top = `${kgY - 100}px`;
+        quoteBubble.classList.add("show");
+        setTimeout(() => quoteBubble.classList.remove("show"), 2500);
+      }
+
+      /* --- Game Balls --- */
+
+      function spawnBall() {
+        if (!gameRunning || paused) return;
+
+        const ball = document.createElement("div");
+
+        // Random ball type
+        // Weighted rarity roll
+        const roll = Math.random() * 100;
+
+        let chosen = "normal";
+
+        if (roll < 70) {
+          chosen = "normal"; // 70%
+        } else if (roll < 90) {
+          chosen = "celtics"; // next 20%
+        } else if (roll < 97) {
+          chosen = "gold"; // next 7%
+        } else {
+          chosen = "bomb"; // last 3%
+        }
+
+        ball.dataset.type = chosen;
+
+        ball.className = "game-ball";
+
+        if (chosen === "normal") {
+          ball.textContent = "🏀";
+        }
+        if (chosen === "gold") {
+          ball.textContent = "⭐";
+        }
+        if (chosen === "bomb") {
+          ball.textContent = "💣";
+        }
+        if (chosen === "celtics") {
+          ball.textContent = "🍀";
+        }
+
+        const x = Math.random() * (window.innerWidth - 60) + 30;
+        const y = Math.random() * (window.innerHeight - 60) + 30;
+
+        ball.style.left = `${x}px`;
+        ball.style.top = `${y}px`;
+
+        document.body.appendChild(ball);
+        gameBalls.push(ball);
+
+        setTimeout(() => {
+          if (ball.parentNode) ball.remove();
+        }, 8000);
+      }
+
+      function checkCollection() {
+        const now = Date.now();
+
+        for (let i = gameBalls.length - 1; i >= 0; i--) {
+          const ball = gameBalls[i];
+          const r = ball.getBoundingClientRect();
+          const bx = r.left + r.width / 2;
+          const by = r.top + r.height / 2;
+
+          const dx = bx - kgX;
+          const dy = by - kgY;
+          const d = Math.sqrt(dx * dx + dy * dy);
+
+          if (d < 60) {
+            /* ---------- COMBO SYSTEM ---------- */
+            if (now - lastHitTime < 1200) {
+              combo++;
+            } else {
+              combo = 1;
+            }
+            lastHitTime = now;
+
+            let baseScore = 1;
+            let ballType = ball.dataset.type;
+
+            /* ---------- SPECIAL BALL EFFECTS ---------- */
+
+            if (ballType === "gold") {
+              baseScore = 5;
+            }
+
+            if (ballType === "bomb") {
+              intensity = 0;
+              speedFill.style.width = "0%";
+            }
+
+            if (ballType === "celtics") {
+              document.body.style.filter = "brightness(1.4)";
+              setTimeout(() => {
+                document.body.style.filter = "brightness(1)";
+              }, 3000);
+            }
+
+            /* ---------- APPLY SCORE WITH COMBO ---------- */
+            const points = baseScore * combo;
+            score += points;
+            scoreValue.textContent = score;
+
+            // Sound
+            sounds[Math.floor(Math.random() * sounds.length)].play();
+
+            // Intensity (bomb doesn't add)
+            if (ballType !== "bomb") {
+              intensity = Math.min(intensity + 20, 100);
+              speedFill.style.width = intensity + "%";
+            }
+
+            // Fire Mode Trigger
+            if (intensity >= 100 && !fireActive) {
+              triggerFire();
+            }
+
+            // Remove ball
+            ball.style.transform = "scale(0)";
+            ball.style.opacity = "0";
+            setTimeout(() => ball.remove(), 200);
+            gameBalls.splice(i, 1);
+          }
+        }
+      }
+
+      /* --- FIRE MODE --- */
+
+      function triggerFire() {
+        fireActive = true;
+
+        fireSound.play(); // 🔥 Play kg4.mp3
+
+        // 🔥 Screen Shake
+        document.body.classList.add("shake");
+        setTimeout(() => {
+          document.body.classList.remove("shake");
+        }, 400);
+
+        // Animation on bar
+        speedFill.style.transition = "all 0.2s ease";
+        speedFill.style.background = "red";
+        speedFill.style.transform = "scale(1.4)";
+        speedFill.style.opacity = "0";
+
+        setTimeout(() => {
+          speedFill.style.transform = "scale(1)";
+          speedFill.style.opacity = "1";
+          speedFill.style.background =
+            "linear-gradient(90deg, #005083, #78be20, #002b5c)";
+        }, 250);
+
+        // FIRE message
+        const fireMsg = document.createElement("div");
+        fireMsg.textContent = "HE'S ON FIRE!!";
+        fireMsg.style.position = "absolute";
+        fireMsg.style.top = "0";
+        fireMsg.style.right = "0";
+        fireMsg.style.padding = "6px 12px";
+        fireMsg.style.fontSize = "18px";
+        fireMsg.style.fontWeight = "bold";
+        fireMsg.style.color = "orange";
+        fireMsg.style.textShadow = "0 0 10px red";
+        fireMsg.style.opacity = "0";
+        fireMsg.style.transition = "opacity 0.4s ease";
+        fireMsg.style.zIndex = "9999";
+
+        document.querySelector(".hud").appendChild(fireMsg);
+
+        setTimeout(() => (fireMsg.style.opacity = "1"), 50);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+          fireMsg.style.opacity = "0";
+          setTimeout(() => {
+            fireMsg.remove();
+
+            intensity = 0;
+            speedFill.style.width = "0%";
+            fireActive = false;
+          }, 400);
+        }, 3000);
+      }
+
+      /* --- Leaderboard --- */
+
+      function saveScore(name, points) {
+        let board = JSON.parse(localStorage.getItem("kgLeaderboard")) || [];
+
+        board.push({ name, score: points });
+        board.sort((a, b) => b.score - a.score);
+        board = board.slice(0, 10);
+
+        localStorage.setItem("kgLeaderboard", JSON.stringify(board));
+      }
+
+      function showLeaderboard() {
+        const board = JSON.parse(localStorage.getItem("kgLeaderboard")) || [];
+        if (!board.length) return "No scores yet.";
+
+        return (
+          "<strong>Leaderboard</strong><br><br>" +
+          board.map((e, i) => `${i + 1}. ${e.name} — ${e.score}`).join("<br>")
+        );
+      }
+
+      /* --- Game Start / End --- */
+
+      function startGame() {
+        overlay.classList.add("hidden");
+        gameRunning = true;
+        paused = false;
+        intensity = 0;
+        speedFill.style.width = "0%";
+        fireActive = false;
+
+        score = 0;
+
+        scoreValue.textContent = "0";
+
+        spawnIntervalId = setInterval(spawnBall, 1200);
+      }
+
+      function endGame() {
+        gameRunning = false;
+
+        clearInterval(spawnIntervalId);
+
+        const name = prompt("Enter your name for the leaderboard:", "Faraz");
+
+        if (name) saveScore(name, score);
+
+        overlay.classList.remove("hidden");
+        overlay.querySelector(".overlay-content").innerHTML = `
+          <div class="overlay-title">Game Over!</div>
+          <p>Your Score: <strong>${score}</strong></p>
+          <br>
+          ${showLeaderboard()}
+          <br><br>
+          <button class="btn" id="startButton">Play Again</button>
+        `;
+
+        document
+          .getElementById("startButton")
+          .addEventListener("click", startGame);
+      }
+
+      startButton.addEventListener("click", startGame);
+
+      /* --- Pause Button --- */
+
+      pauseBtn.addEventListener("click", () => {
+        if (!gameRunning) return;
+
+        paused = !paused;
+        pauseBtn.textContent = paused ? "▶" : "⏸";
+      });
+    </script>
+  </body>
+</html>
