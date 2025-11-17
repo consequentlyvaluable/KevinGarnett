@@ -27,7 +27,7 @@
         background-position: center;
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         overflow: hidden;
-        cursor: none;
+        
         position: relative;
         min-height: 100vh;
       }
@@ -61,29 +61,6 @@
 
       .shake {
         animation: screen-shake 0.4s ease-in-out;
-      }
-
-      /* Custom Cursor (hidden on mobile) */
-      .cursor,
-      .cursor-follower {
-        position: fixed;
-        pointer-events: none;
-        z-index: 10000;
-        transition: transform 0.1s ease;
-      }
-      .cursor {
-        width: 20px;
-        height: 20px;
-        border: 2px solid rgba(255, 255, 255, 0.8);
-        border-radius: 50%;
-        mix-blend-mode: difference;
-      }
-      .cursor-follower {
-        width: 40px;
-        height: 40px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        transition: transform 0.3s ease;
       }
 
       /* KG Container */
@@ -385,6 +362,11 @@
         transform: scale(0.95);
       }
 
+      body,
+      * {
+        cursor: url("kg2.jpg") 16 16, auto !important;
+      }
+
       /* Bottom Text */
       .content {
         position: fixed;
@@ -401,12 +383,6 @@
   </head>
 
   <body>
-    <!-- Cursor -->
-    <div class="cursor"></div>
-    <div class="cursor-follower"></div>
-
-    <!-- Removed Celtics Logo (was here) -->
-
     <!-- Pause Button -->
     <div class="pause-btn" id="pauseBtn">⏸</div>
 
@@ -470,8 +446,8 @@
       /* --- Variables & Setup --- */
 
       const kg = document.getElementById("kg");
-      const cursor = document.querySelector(".cursor");
-      const cursorFollower = document.querySelector(".cursor-follower");
+      
+      
       const quoteBubble = document.getElementById("quoteBubble");
       const pauseBtn = document.getElementById("pauseBtn");
       const overlay = document.getElementById("overlay");
@@ -483,10 +459,7 @@
         navigator.userAgent
       );
 
-      if (isMobile) {
-        cursor.style.display = "none";
-        cursorFollower.style.display = "none";
-      }
+      
 
       let mouseX = window.innerWidth / 2;
       let mouseY = window.innerHeight / 2;
@@ -545,13 +518,7 @@
         mouseX = x;
         mouseY = y;
 
-        if (!isMobile) {
-          cursor.style.left = `${x - 10}px`;
-          cursor.style.top = `${y - 10}px`;
-
-          cursorFollower.style.left = `${x - 20}px`;
-          cursorFollower.style.top = `${y - 20}px`;
-        }
+        
 
         const dx = x - lastX;
         const dy = y - lastY;
