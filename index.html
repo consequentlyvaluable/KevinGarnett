@@ -420,6 +420,11 @@
       </div>
 
       <div class="hud-panel">
+        <div class="hud-label">Larry O'Brien Trophies</div>
+        <div class="hud-value" id="trophyValue">0 🏆</div>
+      </div>
+
+      <div class="hud-panel">
         <div class="hud-label">KG Intensity</div>
         <div class="speed-bar">
           <div class="speed-fill" id="speedFill"></div>
@@ -453,6 +458,7 @@
       const overlay = document.getElementById("overlay");
       const startButton = document.getElementById("startButton");
       const scoreValue = document.getElementById("scoreValue");
+      const trophyValue = document.getElementById("trophyValue");
       const speedFill = document.getElementById("speedFill");
 
       const isMobile = /Android|iPhone|iPad|iPod|IEMobile|BlackBerry/i.test(
@@ -474,6 +480,7 @@
       let gameRunning = false;
       let paused = false;
       let score = 0;
+      let trophies = 0;
       let spawnIntervalId = null;
       let combo = 0;
       let lastHitTime = 0;
@@ -687,6 +694,7 @@
             const points = baseScore * combo;
             score += points;
             scoreValue.textContent = score;
+            checkTrophyMilestones();
 
             // Sound
             sounds[Math.floor(Math.random() * sounds.length)].play();
@@ -708,6 +716,15 @@
             setTimeout(() => ball.remove(), 200);
             gameBalls.splice(i, 1);
           }
+        }
+      }
+
+      function checkTrophyMilestones() {
+        const milestoneCount = Math.floor(score / 100);
+
+        if (milestoneCount > trophies) {
+          trophies = milestoneCount;
+          trophyValue.textContent = `${trophies} 🏆`;
         }
       }
 
@@ -802,8 +819,10 @@
         fireActive = false;
 
         score = 0;
+        trophies = 0;
 
         scoreValue.textContent = "0";
+        trophyValue.textContent = "0 🏆";
 
         spawnIntervalId = setInterval(spawnBall, 1200);
       }
